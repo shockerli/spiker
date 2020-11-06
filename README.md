@@ -1,5 +1,5 @@
 # Spiker
-> A Golang package implementation of real-time computing
+> A Go package implementation of real-time computing
 >
 > Inspired by [cristiandima/tdop](https://github.com/cristiandima/tdop)
 
