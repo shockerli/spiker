@@ -2,6 +2,7 @@ package spiker
 
 import (
 	"fmt"
+	"strings"
 )
 
 const indentStep = "    "
@@ -26,6 +27,7 @@ func FormatAst(nodeList []AstNode) (f string, err error) {
 		}
 		f += "\n"
 	}
+	f = strings.TrimRight(f, "\n")
 
 	return
 }

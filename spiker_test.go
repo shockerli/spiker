@@ -24,8 +24,7 @@ func TestEvaluate(t *testing.T) {
 	for index, tt := range tests {
 		val, err := spiker.Execute(tt.input)
 		if val != tt.expect {
-			t.Errorf("test[%d], wrong operator precedence, expected = %v, got = %v",
-				index, tt.expect, val)
+			t.Errorf("test[%d], expected = %v, got = %v", index, tt.expect, val)
 		} else if err != nil {
 			t.Error(err.Error())
 		}
@@ -40,6 +39,30 @@ func BenchmarkExecute(b *testing.B) {
 		if _, err := spiker.Execute(src); err != nil {
 			b.Log(err)
 			b.Fail()
+		}
+	}
+}
+
+func TestFormat(t *testing.T) {
+	tests := []struct {
+		input  string
+		expect string
+	}{
+		{`a=1;b+=2;`, `a = 1;
+b += 2;`},
+	}
+	for index, tt := range tests {
+		val, err := spiker.Format(tt.input)
+		println(val)
+		println(tt.expect)
+		if val != tt.expect {
+			t.Errorf("test[%d], expected: %v, got: %v",
+				index,
+				tt.expect,
+				val,
+			)
+		} else if err != nil {
+			t.Error(err.Error())
 		}
 	}
 }
