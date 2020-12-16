@@ -2,12 +2,11 @@ package spiker
 
 import (
 	"fmt"
-	"strings"
 	"unicode/utf8"
 )
 
 func execBuiltinFunc(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
-	switch strings.ToLower(fnc.Name.Value) {
+	switch fnc.Name.Value {
 	case "export":
 		if len(fnc.Param) != 1 {
 			panic(fmt.Sprintf("export() expects 1 parameters, %d given", len(fnc.Param)))
