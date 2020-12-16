@@ -5,7 +5,7 @@ type VariableScope struct {
 	scopeName      string
 	scopeLevel     int
 	vars           map[string]interface{}
-	directive      []AstNode
+	directives     []AstNode
 	enclosingScope *VariableScope
 }
 
@@ -16,7 +16,7 @@ func NewScopeTable(scopeName string, scopeLevel int, scope *VariableScope) *Vari
 	vs.scopeName = scopeName
 	vs.scopeLevel = scopeLevel
 	vs.enclosingScope = scope
-	vs.directive = make([]AstNode, 0)
+	vs.directives = make([]AstNode, 0)
 	return vs
 }
 
@@ -45,15 +45,15 @@ func (scope *VariableScope) Del(variable string) {
 // Clean clean all of the vars
 func (scope *VariableScope) Clean() {
 	scope.vars = make(map[string]interface{})
-	scope.directive = make([]AstNode, 0)
+	scope.directives = make([]AstNode, 0)
 }
 
 // Delete a directive
 func (scope *VariableScope) directDel(index int) {
-	scope.directive = append(scope.directive[:index], scope.directive[index+1:]...)
+	scope.directives = append(scope.directives[:index], scope.directives[index+1:]...)
 }
 
 // Push as directive
 func (scope *VariableScope) directPush(node AstNode) {
-	scope.directive = append(scope.directive, node)
+	scope.directives = append(scope.directives, node)
 }

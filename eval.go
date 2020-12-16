@@ -448,7 +448,7 @@ func evalWhileStmt(expr *NodeWhile, scope *VariableScope) interface{} {
 
 func needBreak(scope *VariableScope) (breakLevel int, an AstNode) {
 	breakLevel = 0
-	for idx, direct := range scope.directive {
+	for idx, direct := range scope.directives {
 		switch direct.(type) {
 		case *NodeContinue:
 			an = direct

@@ -2,11 +2,12 @@ package spiker
 
 import (
 	"fmt"
+	"strings"
 	"unicode/utf8"
 )
 
 func execBuiltinFunc(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
-	switch fnc.Name.Value {
+	switch strings.ToLower(fnc.Name.Value) {
 	case "export":
 		if len(fnc.Param) != 1 {
 			panic(fmt.Sprintf("export() expects 1 parameters, %d given", len(fnc.Param)))
@@ -75,7 +76,7 @@ func length(v AstNode, scope *VariableScope) int {
 	return -1
 }
 
-// Whether a variable or index is exist
+// Whether a variable or index is existed
 func exist(v AstNode, scope *VariableScope) bool {
 	switch v.(type) {
 	case *NodeVariable:
