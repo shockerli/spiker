@@ -19,6 +19,9 @@ func TestEvaluate(t *testing.T) {
 		{`1 + "234a";`, "1234a"},
 		{`1 + "0.234a";`, "10.234a"},
 		{`1 + "abc234";`, "1abc234"},
+		{`123 in "abc234";`, false},
+		{`23 in "abc234";`, true},
+		{`2 in [1,2,3];`, true},
 	}
 
 	for index, tt := range tests {

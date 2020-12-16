@@ -100,6 +100,14 @@ v %= 2;
 a = b = c = 100;
 ```
 
+### In Operator
+```js
+"john" in ["joy", "john"]; // true
+100 in [100, 200, 300]; // true
+9 in [9:"999", 8:"888"]; // true
+9 in "123456789"; // true
+```
+
 ### Build-in functions
 - export
 > return the expression value and interrupt script
