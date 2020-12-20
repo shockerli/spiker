@@ -223,6 +223,20 @@ func transNode(token *Token) AstNode {
 			Ast{raw: token},
 		}
 
+	// return
+	case SymbolReturn:
+		nr := &NodeReturn{
+			Ast: Ast{raw: token},
+		}
+
+		if len(token.children) > 0 {
+			for _, v := range token.children {
+				nr.Tuples = append(nr.Tuples, transNode(v))
+			}
+		}
+
+		return nr
+
 	}
 
 	return nil
@@ -236,8 +250,8 @@ func transFuncDef(token *Token) *NodeFuncDef {
 			Ast:   Ast{raw: token.children[0]},
 			Value: token.children[0].value,
 		},
-		Param: []NodeParam{},
-		Body:  nil,
+		Params: make([]NodeParam, 0),
+		Body:   make([]AstNode, 0),
 	}
 
 	tokFnd := token.children[1]
@@ -248,7 +262,7 @@ func transFuncDef(token *Token) *NodeFuncDef {
 	// params
 	switch tokFnd.children[0].sym {
 	case SymbolIdent: // single parameter
-		fnd.Param = append(fnd.Param, NodeParam{
+		fnd.Params = append(fnd.Params, NodeParam{
 			Ast: Ast{raw: tokFnd.children[0]},
 			Name: NodeVariable{
 				Ast:   Ast{raw: tokFnd.children[0]},
@@ -259,7 +273,7 @@ func transFuncDef(token *Token) *NodeFuncDef {
 	case SymbolTuple: // multi parameters, use tuple
 		if len(tokFnd.children[0].children) > 0 {
 			for _, v := range tokFnd.children[0].children {
-				fnd.Param = append(fnd.Param, NodeParam{
+				fnd.Params = append(fnd.Params, NodeParam{
 					Ast: Ast{raw: v},
 					Name: NodeVariable{
 						Ast:   Ast{raw: v},

@@ -1,0 +1,21 @@
+print_hello = () -> {
+	print("hello world");
+};
+
+# add
+add = (a, b) -> {
+  return a + b;
+};
+
+switch_var = (a, b) -> {
+  if (a >= b) {
+    return (a, b);
+  } else {
+    return (b, a);
+  }
+};
+
+# single
+sum = (a, b) -> a + b;
+
+incr = x -> x + 1;

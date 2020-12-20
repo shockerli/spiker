@@ -119,9 +119,26 @@ func (nb NodeBreak) Format() string {
 // NodeReturn return node
 type NodeReturn struct {
 	Ast
+	Tuples []AstNode
 }
 
 // Format .
 func (nr NodeReturn) Format() string {
-	return SymbolReturn.String()
+	var str = SymbolReturn.String()
+
+	if len(nr.Tuples) > 0 {
+		var ts []string
+
+		for _, v := range nr.Tuples {
+			ts = append(ts, v.Format())
+		}
+
+		if len(ts) > 1 {
+			str += " (" + strings.Join(ts, ", ")
+		} else if len(ts) == 1 {
+			str += " " + ts[0]
+		}
+	}
+
+	return str
 }

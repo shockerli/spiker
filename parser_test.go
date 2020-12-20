@@ -8,10 +8,11 @@ import (
 )
 
 var srcTests = []string{
-	"testdata/value.src",
 	"testdata/assign.src",
 	"testdata/collect.src",
+	"testdata/function.src",
 	"testdata/operator.src",
+	"testdata/value.src",
 }
 
 func readFile(file string) string {
