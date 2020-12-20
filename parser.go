@@ -16,14 +16,14 @@ func (psr *Parser) expression(rbp int) *Token {
 	if t.nud != nil {
 		left = t.nud(t, psr)
 	} else {
-		panic(fmt.Sprint("syntax error: NOT PREFIX ", t.String()))
+		panic(fmt.Sprint("syntax error: NOT PREFIX ", t.Format()))
 	}
 	for rbp < psr.Lexer.peek().bindingPower {
 		t := psr.Lexer.next()
 		if t.led != nil {
 			left = t.led(t, psr, left)
 		} else {
-			panic(fmt.Sprint("syntax error: NOT INFIX ", t.String()))
+			panic(fmt.Sprint("syntax error: NOT INFIX ", t.Format()))
 		}
 	}
 
@@ -48,19 +48,18 @@ func (psr *Parser) Statements() (stmts []*Token, err error) {
 }
 
 func (psr *Parser) block() *Token {
-	tok := psr.Lexer.next()
-	if tok.sym != SymbolLbrace {
-		panic(fmt.Sprint("syntax error: was looking for block start ", tok.String()))
+	t := psr.Lexer.next()
+	if t.sym != SymbolLbrace {
+		panic(fmt.Sprint("syntax error: was looking for block start ", t.Format()))
 	}
-	block := tok.std(tok, psr)
-	return block
+	return t.std(t, psr)
 }
 
 func (psr *Parser) statement() *Token {
-	tok := psr.Lexer.peek()
-	if tok.std != nil {
-		tok = psr.Lexer.next()
-		return tok.std(tok, psr)
+	t := psr.Lexer.peek()
+	if t.std != nil {
+		t = psr.Lexer.next()
+		return t.std(t, psr)
 	}
 	res := psr.expression(0)
 	psr.advance(SymbolSemicolon)
@@ -70,9 +69,9 @@ func (psr *Parser) statement() *Token {
 func (psr *Parser) advance(sym Symbol) *Token {
 	line := psr.Lexer.line
 	col := psr.Lexer.col
-	token := psr.Lexer.next()
-	if token.sym != sym {
-		panic(fmt.Sprintf(`syntax error: expected "%s", but got "%s", on line %d:%d`, sym, token.sym, line, col))
+	t := psr.Lexer.next()
+	if t.sym != sym {
+		panic(fmt.Sprintf(`syntax error: expected "%s", but got "%s", on line %d:%d`, sym, t.sym, line, col))
 	}
-	return token
+	return t
 }

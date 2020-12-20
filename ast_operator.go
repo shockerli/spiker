@@ -8,19 +8,20 @@ type NodeBinaryOp struct {
 	Right AstNode
 }
 
-func (bin NodeBinaryOp) String() string {
+// Format .
+func (bin NodeBinaryOp) Format() string {
 	f := " " + string(bin.Op) + " "
 	switch bin.Left.(type) {
 	case *NodeBinaryOp:
-		f = "(" + bin.Left.String() + ")" + f
+		f = "(" + bin.Left.Format() + ")" + f
 	default:
-		f = bin.Left.String() + f
+		f = bin.Left.Format() + f
 	}
 	switch bin.Right.(type) {
 	case *NodeBinaryOp:
-		f += "(" + bin.Right.String() + ")"
+		f += "(" + bin.Right.Format() + ")"
 	default:
-		f += bin.Right.String()
+		f += bin.Right.Format()
 	}
 
 	return f
@@ -33,8 +34,9 @@ type NodeUnaryOp struct {
 	Right AstNode
 }
 
-func (un NodeUnaryOp) String() string {
-	return string(un.Op) + un.Right.String()
+// Format .
+func (un NodeUnaryOp) Format() string {
+	return string(un.Op) + un.Right.Format()
 }
 
 // NodeAssignOp assignment operator node
@@ -45,8 +47,9 @@ type NodeAssignOp struct {
 	Expr AstNode
 }
 
-func (as NodeAssignOp) String() string {
-	return as.Var.String() + " " + string(as.Op) + " " + as.Expr.String()
+// Format .
+func (as NodeAssignOp) Format() string {
+	return as.Var.Format() + " " + string(as.Op) + " " + as.Expr.Format()
 }
 
 // NodeFuncCallOp function call node
@@ -56,16 +59,17 @@ type NodeFuncCallOp struct {
 	Param []AstNode
 }
 
-func (fu NodeFuncCallOp) String() string {
+// Format .
+func (fu NodeFuncCallOp) Format() string {
 	ps := ""
 	for idx, as := range fu.Param {
 		if idx > 0 {
 			ps += ", "
 		}
-		ps += as.String()
+		ps += as.Format()
 	}
 
-	return fu.Name.String() + "(" + ps + ")"
+	return fu.Name.Format() + "(" + ps + ")"
 }
 
 // NodeVarIndex return the value of the specified index(list, string)
@@ -75,6 +79,7 @@ type NodeVarIndex struct {
 	Index AstNode
 }
 
-func (vi NodeVarIndex) String() string {
-	return vi.Var.String() + "[" + vi.Index.String() + "]"
+// Format .
+func (vi NodeVarIndex) Format() string {
+	return vi.Var.Format() + "[" + vi.Index.Format() + "]"
 }

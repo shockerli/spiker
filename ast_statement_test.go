@@ -65,7 +65,7 @@ func TestNodeIf_String(t *testing.T) {
 			ElseIf: tt.fields.ElseIf,
 			Else:   tt.fields.Else,
 		}
-		if got := ifs.String(); got != tt.want {
+		if got := ifs.Format(); got != tt.want {
 			t.Errorf("%q. NodeIf.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -105,7 +105,7 @@ func TestNodeWhile_String(t *testing.T) {
 			Expr: tt.fields.Expr,
 			Body: tt.fields.Body,
 		}
-		if got := nws.String(); got != tt.want {
+		if got := nws.Format(); got != tt.want {
 			println(got)
 			t.Errorf("%q. NodeWhile.String() = %v, want %v", tt.name, got, tt.want)
 		}
@@ -127,7 +127,7 @@ func TestNodeContinue_String(t *testing.T) {
 		nc := spiker.NodeContinue{
 			Ast: tt.fields.Ast,
 		}
-		if got := nc.String(); got != tt.want {
+		if got := nc.Format(); got != tt.want {
 			t.Errorf("%q. NodeContinue.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -148,7 +148,7 @@ func TestNodeBreak_String(t *testing.T) {
 		nb := spiker.NodeBreak{
 			Ast: tt.fields.Ast,
 		}
-		if got := nb.String(); got != tt.want {
+		if got := nb.Format(); got != tt.want {
 			t.Errorf("%q. NodeBreak.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -169,7 +169,7 @@ func TestNodeReturn_String(t *testing.T) {
 		nr := spiker.NodeReturn{
 			Ast: tt.fields.Ast,
 		}
-		if got := nr.String(); got != tt.want {
+		if got := nr.Format(); got != tt.want {
 			t.Errorf("%q. NodeReturn.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}

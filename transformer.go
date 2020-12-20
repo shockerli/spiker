@@ -36,6 +36,13 @@ func transNode(token *Token) AstNode {
 		if token.children[0].sym != SymbolIdent {
 			panic(fmt.Sprintf("EXPECTED IDENT, BUT GOT: %v", token.children[0].sym))
 		}
+
+		// Function declare
+		if len(token.children) >= 2 && token.children[1].sym == SymbolFuncDeclare {
+			return transFuncDef(token)
+		}
+
+		// Assign
 		return &NodeAssignOp{
 			Ast: Ast{raw: token},
 			Var: NodeVariable{
@@ -221,7 +228,61 @@ func transNode(token *Token) AstNode {
 	return nil
 }
 
-// Transform token to IF statement
+// transform token to FuncDef statement
+func transFuncDef(token *Token) *NodeFuncDef {
+	fnd := &NodeFuncDef{
+		Ast: Ast{raw: token},
+		Name: NodeVariable{
+			Ast:   Ast{raw: token.children[0]},
+			Value: token.children[0].value,
+		},
+		Param: []NodeParam{},
+		Body:  nil,
+	}
+
+	tokFnd := token.children[1]
+	if len(tokFnd.children) < 2 {
+		panic("FUNC DECLARE EXPECTED PARAMS AND BODY")
+	}
+
+	// params
+	switch tokFnd.children[0].sym {
+	case SymbolIdent: // single parameter
+		fnd.Param = append(fnd.Param, NodeParam{
+			Ast: Ast{raw: tokFnd.children[0]},
+			Name: NodeVariable{
+				Ast:   Ast{raw: tokFnd.children[0]},
+				Value: tokFnd.children[0].value,
+			},
+		})
+
+	case SymbolTuple: // multi parameters, use tuple
+		if len(tokFnd.children[0].children) > 0 {
+			for _, v := range tokFnd.children[0].children {
+				fnd.Param = append(fnd.Param, NodeParam{
+					Ast: Ast{raw: v},
+					Name: NodeVariable{
+						Ast:   Ast{raw: v},
+						Value: v.value,
+					},
+				})
+			}
+		}
+	}
+
+	// body
+	if tokFnd.children[1].sym == SymbolLbrace {
+		for _, v := range tokFnd.children[1].children {
+			fnd.Body = append(fnd.Body, transNode(v))
+		}
+	} else {
+		fnd.Body = append(fnd.Body, transNode(tokFnd.children[1]))
+	}
+
+	return fnd
+}
+
+// transform token to IF statement
 func transIfStmt(token *Token) *NodeIf {
 	// if
 	ifStmt := &NodeIf{
@@ -257,6 +318,7 @@ func transIfStmt(token *Token) *NodeIf {
 	return ifStmt
 }
 
+// is a func call statement
 func isFuncCall(token *Token) bool {
 	return token.sym == SymbolLparen && len(token.children) > 0 && token.children[0].sym == SymbolIdent
 }

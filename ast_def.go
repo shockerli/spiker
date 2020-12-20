@@ -8,26 +8,27 @@ type NodeFuncDef struct {
 	Body  []AstNode
 }
 
-// TODO
-func (fn NodeFuncDef) String() string {
+// Format .
+func (fn NodeFuncDef) Format() string {
 	return ""
 }
 
 // NodeParam function param
 type NodeParam struct {
 	Ast
-	DefaultValue interface{}
-	Name         NodeVariable
-	Value        interface{}
+	Default interface{}
+	Name    NodeVariable
+	Value   interface{}
 }
 
-func (p NodeParam) String() string {
-	f := p.Name.String()
+// Format .
+func (p NodeParam) Format() string {
+	f := p.Name.Format()
 
 	if p.Value != nil {
 		f += Interface2String(p.Value)
-	} else if p.DefaultValue != nil {
-		f += Interface2String(p.DefaultValue)
+	} else if p.Default != nil {
+		f += Interface2String(p.Default)
 	}
 
 	return f

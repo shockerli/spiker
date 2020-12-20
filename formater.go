@@ -19,7 +19,7 @@ func FormatAst(nodeList []AstNode) (f string, err error) {
 		if node == nil {
 			continue
 		}
-		f += node.String()
+		f += node.Format()
 		switch node.(type) {
 		case *NodeIf, *NodeFuncDef, *NodeWhile:
 		default:

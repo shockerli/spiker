@@ -253,16 +253,6 @@ func getTokenRegistry() *tokenRegistry {
 	t.infix(SymbolLogicAnd, 25) // &&
 	t.infix(SymbolLogicOr, 25)  // ||
 
-	// if
-	// t.infixLed(SYMBOL_IF, 20, func(token *Token, p *Parser, left *Token) *Token {
-	//     cond := p.expression(0)
-	//     token.children = append(token.children, cond)
-	//     p.advance(SYMBOL_ELSE)
-	//     token.children = append(token.children, left)
-	//     token.children = append(token.children, p.expression(0))
-	//     return token
-	// })
-
 	// (
 	t.infixLed(SymbolLparen, 90, func(token *Token, p *Parser, left *Token) *Token {
 		if left.sym != SymbolIdent && left.sym != SymbolLbrack && left.sym != SymbolLparen && left.sym != SymbolFuncDeclare {

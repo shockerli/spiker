@@ -17,7 +17,8 @@ type NodeVariable struct {
 	Value string
 }
 
-func (nv NodeVariable) String() string {
+// Format .
+func (nv NodeVariable) Format() string {
 	return nv.Value
 }
 
@@ -27,7 +28,8 @@ type NodeString struct {
 	Value string
 }
 
-func (str NodeString) String() string {
+// Format .
+func (str NodeString) Format() string {
 	return "\"" + str.Value + "\""
 }
 
@@ -37,7 +39,8 @@ type NodeNumber struct {
 	Value float64
 }
 
-func (num NodeNumber) String() string {
+// Format .
+func (num NodeNumber) Format() string {
 	return strconv.FormatFloat(num.Value, 'f', -1, 64)
 }
 
@@ -47,7 +50,8 @@ type NodeBool struct {
 	Value bool
 }
 
-func (num NodeBool) String() string {
+// Format .
+func (num NodeBool) Format() string {
 	if num.Value {
 		return "true"
 	}
@@ -60,13 +64,14 @@ type NodeList struct {
 	List []AstNode
 }
 
-func (arr NodeList) String() string {
+// Format .
+func (arr NodeList) Format() string {
 	f := "["
 	for idx, as := range arr.List {
 		if idx > 0 {
 			f += ", "
 		}
-		f += as.String()
+		f += as.Format()
 	}
 	f += "]"
 
@@ -79,12 +84,13 @@ type NodeMap struct {
 	Map map[AstNode]AstNode
 }
 
-func (nm NodeMap) String() string {
+// Format .
+func (nm NodeMap) Format() string {
 	sortedKeys := make([]string, 0)
 	sortMap := make(map[string]AstNode)
 	for kn, kv := range nm.Map {
-		sortedKeys = append(sortedKeys, kn.String())
-		sortMap[kn.String()] = kv
+		sortedKeys = append(sortedKeys, kn.Format())
+		sortMap[kn.Format()] = kv
 	}
 	sort.Strings(sortedKeys)
 
@@ -93,7 +99,7 @@ func (nm NodeMap) String() string {
 		if idx > 0 {
 			f += ", "
 		}
-		f += key + ": " + sortMap[key].String()
+		f += key + ": " + sortMap[key].Format()
 	}
 	f += "]"
 

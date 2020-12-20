@@ -2,7 +2,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/shockerli/spiker)](https://pkg.go.dev/github.com/shockerli/spiker)
 > A Go package implementation of real-time computing
 >
-> Inspired by [cristiandima/tdop](https://github.com/cristiandima/tdop)
+> lexer is inspired by [tdop](https://github.com/cristiandima/tdop)
 
 
 ## Install

@@ -11,16 +11,17 @@ type NodeIf struct {
 	Else   []AstNode
 }
 
-func (ifs NodeIf) String() string {
+// Format .
+func (ifs NodeIf) Format() string {
 	str := ""
 
 	if ifs.Expr != nil {
-		str += "if (" + ifs.Expr.String() + ") {\n"
+		str += "if (" + ifs.Expr.Format() + ") {\n"
 		for _, node := range ifs.Body {
 			str += indentStep
 			switch node.(type) {
 			case NodeIf, NodeFuncDef, NodeWhile:
-				split := strings.Split(node.String(), "\n")
+				split := strings.Split(node.Format(), "\n")
 				cnt := len(split)
 				for idx, s := range split {
 					if idx > 0 {
@@ -34,7 +35,7 @@ func (ifs NodeIf) String() string {
 					}
 				}
 			default:
-				str += node.String()
+				str += node.Format()
 				str += ";"
 			}
 			str += "\n"
@@ -43,13 +44,13 @@ func (ifs NodeIf) String() string {
 	}
 
 	if ifs.ElseIf != nil {
-		str += " else " + ifs.ElseIf.String()
+		str += " else " + ifs.ElseIf.Format()
 	}
 
 	if ifs.Else != nil {
 		str += " else {\n"
 		for _, node := range ifs.Else {
-			str += indentStep + node.String() + ";\n"
+			str += indentStep + node.Format() + ";\n"
 		}
 		str += "}"
 	}
@@ -64,13 +65,14 @@ type NodeWhile struct {
 	Body []AstNode
 }
 
-func (nws NodeWhile) String() string {
-	str := "while (" + nws.Expr.String() + ") {\n"
+// Format .
+func (nws NodeWhile) Format() string {
+	str := "while (" + nws.Expr.Format() + ") {\n"
 	for _, node := range nws.Body {
 		str += indentStep
 		switch node.(type) {
 		case NodeIf, NodeFuncDef, NodeWhile:
-			split := strings.Split(node.String(), "\n")
+			split := strings.Split(node.Format(), "\n")
 			cnt := len(split)
 			for idx, s := range split {
 				if idx > 0 {
@@ -84,7 +86,7 @@ func (nws NodeWhile) String() string {
 				}
 			}
 		default:
-			str += node.String()
+			str += node.Format()
 			str += ";"
 		}
 		str += "\n"
@@ -99,7 +101,8 @@ type NodeContinue struct {
 	Ast
 }
 
-func (nc NodeContinue) String() string {
+// Format .
+func (nc NodeContinue) Format() string {
 	return SymbolContinue.String()
 }
 
@@ -108,7 +111,8 @@ type NodeBreak struct {
 	Ast
 }
 
-func (nb NodeBreak) String() string {
+// Format .
+func (nb NodeBreak) Format() string {
 	return SymbolBreak.String()
 }
 
@@ -117,6 +121,7 @@ type NodeReturn struct {
 	Ast
 }
 
-func (nr NodeReturn) String() string {
+// Format .
+func (nr NodeReturn) Format() string {
 	return SymbolReturn.String()
 }

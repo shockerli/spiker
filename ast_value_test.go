@@ -23,7 +23,7 @@ func TestNodeVariable_String(t *testing.T) {
 			Ast:   tt.fields.Ast,
 			Value: tt.fields.Value,
 		}
-		if got := nv.String(); got != tt.want {
+		if got := nv.Format(); got != tt.want {
 			t.Errorf("%q. NodeVariable.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -49,7 +49,7 @@ func TestNodeString_String(t *testing.T) {
 			Ast:   tt.fields.Ast,
 			Value: tt.fields.Value,
 		}
-		if got := str.String(); got != tt.want {
+		if got := str.Format(); got != tt.want {
 			t.Errorf("%q. NodeString.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -77,7 +77,7 @@ func TestNodeNumber_String(t *testing.T) {
 			Ast:   tt.fields.Ast,
 			Value: tt.fields.Value,
 		}
-		if got := num.String(); got != tt.want {
+		if got := num.Format(); got != tt.want {
 			t.Errorf("%q. NodeNumber.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -101,7 +101,7 @@ func TestNodeBool_String(t *testing.T) {
 			Ast:   tt.fields.Ast,
 			Value: tt.fields.Value,
 		}
-		if got := num.String(); got != tt.want {
+		if got := num.Format(); got != tt.want {
 			t.Errorf("%q. NodeBool.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -139,7 +139,7 @@ func TestNodeList_String(t *testing.T) {
 			Ast:  tt.fields.Ast,
 			List: tt.fields.List,
 		}
-		if got := arr.String(); got != tt.want {
+		if got := arr.Format(); got != tt.want {
 			t.Errorf("%q. NodeList.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -169,7 +169,7 @@ func TestNodeMap_String(t *testing.T) {
 			Ast: tt.fields.Ast,
 			Map: tt.fields.Map,
 		}
-		if got := nm.String(); got != tt.want {
+		if got := nm.Format(); got != tt.want {
 			t.Errorf("%q. NodeMap.String() = %v, want %v", tt.name, got, tt.want)
 		}
 	}

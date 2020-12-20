@@ -2,7 +2,7 @@ package spiker
 
 // AstNode AST node interface
 type AstNode interface {
-	String() string
+	Format() string
 	Raw() *Token
 }
 

@@ -79,7 +79,7 @@ func length(v AstNode, scope *VariableScope) int {
 func exist(v AstNode, scope *VariableScope) bool {
 	switch v.(type) {
 	case *NodeVariable:
-		if _, ok := scope.Get(v.String()); ok {
+		if _, ok := scope.Get(v.Format()); ok {
 			return true
 		}
 
@@ -118,7 +118,7 @@ func exist(v AstNode, scope *VariableScope) bool {
 func del(v AstNode, scope *VariableScope) {
 	switch v := v.(type) {
 	case *NodeVariable:
-		scope.enclosingScope.Del(v.String())
+		scope.enclosingScope.Del(v.Format())
 
 	case *NodeVarIndex:
 		varVal := evalExpr(v.Var, scope)

@@ -23,9 +23,10 @@ type Token struct {
 	children     []*Token
 }
 
-func (t *Token) String() string {
+// Format simple format token info
+func (t *Token) Format() string {
 	return fmt.Sprintf(
-		"on line %d:%d, symbol: %s, value: %s",
+		"on line %d:%d, symbol: '%s', value: '%s'",
 		t.line, t.col, t.sym, t.value,
 	)
 }
