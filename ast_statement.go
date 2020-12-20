@@ -17,29 +17,7 @@ func (ifs NodeIf) Format() string {
 
 	if ifs.Expr != nil {
 		str += "if (" + ifs.Expr.Format() + ") {\n"
-		for _, node := range ifs.Body {
-			str += indentStep
-			switch node.(type) {
-			case NodeIf, NodeFuncDef, NodeWhile:
-				split := strings.Split(node.Format(), "\n")
-				cnt := len(split)
-				for idx, s := range split {
-					if idx > 0 {
-						str += indentStep
-					}
-					if len(s) > 0 {
-						str += s
-					}
-					if idx+1 < cnt {
-						str += "\n"
-					}
-				}
-			default:
-				str += node.Format()
-				str += ";"
-			}
-			str += "\n"
-		}
+		str += formatBody(ifs.Body)
 		str += "}"
 	}
 
@@ -68,29 +46,7 @@ type NodeWhile struct {
 // Format .
 func (nws NodeWhile) Format() string {
 	str := "while (" + nws.Expr.Format() + ") {\n"
-	for _, node := range nws.Body {
-		str += indentStep
-		switch node.(type) {
-		case NodeIf, NodeFuncDef, NodeWhile:
-			split := strings.Split(node.Format(), "\n")
-			cnt := len(split)
-			for idx, s := range split {
-				if idx > 0 {
-					str += indentStep
-				}
-				if len(s) > 0 {
-					str += s
-				}
-				if idx+1 < cnt {
-					str += "\n"
-				}
-			}
-		default:
-			str += node.Format()
-			str += ";"
-		}
-		str += "\n"
-	}
+	str += formatBody(nws.Body)
 	str += "}"
 
 	return str
@@ -138,6 +94,36 @@ func (nr NodeReturn) Format() string {
 		} else if len(ts) == 1 {
 			str += " " + ts[0]
 		}
+	}
+
+	return str
+}
+
+// format body statements for IF/FUNC/WHILE
+func formatBody(bs []AstNode) string {
+	var str string
+	for _, node := range bs {
+		str += indentStep
+		switch node.(type) {
+		case NodeIf, NodeFuncDef, NodeWhile, *NodeIf, *NodeFuncDef, *NodeWhile:
+			split := strings.Split(node.Format(), "\n")
+			cnt := len(split)
+			for idx, s := range split {
+				if idx > 0 {
+					str += indentStep
+				}
+				if len(s) > 0 {
+					str += s
+				}
+				if idx+1 < cnt {
+					str += "\n"
+				}
+			}
+		default:
+			str += node.Format()
+			str += ";"
+		}
+		str += "\n"
 	}
 
 	return str

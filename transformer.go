@@ -289,7 +289,12 @@ func transFuncDef(token *Token) *NodeFuncDef {
 		for _, v := range tokFnd.children[1].children {
 			fnd.Body = append(fnd.Body, transNode(v))
 		}
+
+		if len(tokFnd.children[1].children) == 1 {
+			fnd.SingleStmt = isSingleFuncStmt(tokFnd.children[1].children[0])
+		}
 	} else {
+		fnd.SingleStmt = true
 		fnd.Body = append(fnd.Body, transNode(tokFnd.children[1]))
 	}
 
@@ -335,4 +340,29 @@ func transIfStmt(token *Token) *NodeIf {
 // is a func call statement
 func isFuncCall(token *Token) bool {
 	return token.sym == SymbolLparen && len(token.children) > 0 && token.children[0].sym == SymbolIdent
+}
+
+// is a single statement of function declare
+func isSingleFuncStmt(token *Token) bool {
+	switch token.sym {
+	case SymbolIdent, SymbolLogicNot, SymbolNot:
+		return true
+
+	case SymbolAdd, SymbolSub, SymbolMul, SymbolDiv, SymbolMod, SymbolPow, // +, -, *, /, %, **
+		SymbolSHL, SymbolSHR, // >>, <<
+		SymbolAnd, SymbolOr, SymbolXor, SymbolLogicAnd, SymbolLogicOr, // &, |, ^, &&, ||
+		SymbolEQL, SymbolNEQ, SymbolGTR, SymbolGTE, SymbolLSS, SymbolLTE, // ==, !=, >, >=, <, <=
+		SymbolIn: // in:
+		return true
+
+	case SymbolLbrack, SymbolMap, SymbolArray, SymbolNumber, SymbolString, SymbolTrue, SymbolFalse:
+		return true
+
+	}
+
+	if isFuncCall(token) {
+		return true
+	}
+
+	return false
 }
