@@ -183,10 +183,10 @@ func transNode(token *Token) AstNode {
 					Ast:   Ast{raw: token.children[0]},
 					Value: token.children[0].value,
 				},
-				Param: make([]AstNode, 0),
+				Params: make([]AstNode, 0),
 			}
 			for _, pt := range token.children[1:] {
-				fc.Param = append(fc.Param, transNode(pt))
+				fc.Params = append(fc.Params, transNode(pt))
 			}
 			return fc
 		}
@@ -236,7 +236,6 @@ func transNode(token *Token) AstNode {
 		}
 
 		return nr
-
 	}
 
 	return nil
@@ -352,7 +351,7 @@ func isSingleFuncStmt(token *Token) bool {
 		SymbolSHL, SymbolSHR, // >>, <<
 		SymbolAnd, SymbolOr, SymbolXor, SymbolLogicAnd, SymbolLogicOr, // &, |, ^, &&, ||
 		SymbolEQL, SymbolNEQ, SymbolGTR, SymbolGTE, SymbolLSS, SymbolLTE, // ==, !=, >, >=, <, <=
-		SymbolIn: // in:
+		SymbolIn: // in
 		return true
 
 	case SymbolLbrack, SymbolMap, SymbolArray, SymbolNumber, SymbolString, SymbolTrue, SymbolFalse:

@@ -8,34 +8,34 @@ import (
 func execBuiltinFunc(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
 	switch fnc.Name.Value {
 	case "export":
-		if len(fnc.Param) != 1 {
-			panic(fmt.Sprintf("export() expects 1 parameters, %d given", len(fnc.Param)))
+		if len(fnc.Params) != 1 {
+			panic(fmt.Sprintf("export() expects 1 parameters, %d given", len(fnc.Params)))
 		}
-		return export(fnc.Param[0], scope)
+		return export(fnc.Params[0], scope)
 
 	case "len":
-		if len(fnc.Param) != 1 {
-			panic(fmt.Sprintf("len() expects 1 parameters, %d given", len(fnc.Param)))
+		if len(fnc.Params) != 1 {
+			panic(fmt.Sprintf("len() expects 1 parameters, %d given", len(fnc.Params)))
 		}
-		return length(fnc.Param[0], scope)
+		return length(fnc.Params[0], scope)
 
 	case "exist":
-		if len(fnc.Param) != 1 {
-			panic(fmt.Sprintf("exist() expects 1 parameters, %d given", len(fnc.Param)))
+		if len(fnc.Params) != 1 {
+			panic(fmt.Sprintf("exist() expects 1 parameters, %d given", len(fnc.Params)))
 		}
-		switch fnc.Param[0].(type) {
+		switch fnc.Params[0].(type) {
 		case *NodeVarIndex, *NodeVariable:
 		default:
 			panic("exist() expects parameter variable or index")
 		}
-		return exist(fnc.Param[0], scope)
+		return exist(fnc.Params[0], scope)
 
 	case "del":
-		if len(fnc.Param) < 1 {
-			panic(fmt.Sprintf("del() expects least 1 parameters, %d given", len(fnc.Param)))
+		if len(fnc.Params) < 1 {
+			panic(fmt.Sprintf("del() expects least 1 parameters, %d given", len(fnc.Params)))
 		}
 
-		for _, node := range fnc.Param {
+		for _, node := range fnc.Params {
 			del(node, scope)
 		}
 

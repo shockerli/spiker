@@ -19,6 +19,11 @@ func Evaluator(nodeList []AstNode) (res interface{}, err error) {
 func EvaluateWithScope(nodeList []AstNode, scope *VariableScope) (res interface{}, err error) {
 	defer func() {
 		if e := recover(); e != nil {
+			if e, ok := e.(errExport); ok {
+				res = e.val
+				return
+			}
+
 			err = fmt.Errorf("%v", e)
 		}
 	}()
@@ -78,8 +83,8 @@ func evalExpr(node AstNode, scope *VariableScope) interface{} {
 	case *NodeWhile:
 		return evalWhileStmt(node, scope)
 
-	case *NodeContinue, *NodeBreak:
-		scope.directPush(node)
+	case *NodeFuncDef:
+		evalFuncDef(node, scope)
 
 	}
 
@@ -340,12 +345,55 @@ func calcComparison(symbol Symbol, left interface{}, right interface{}) bool {
 
 // function call
 func evalFuncCall(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
-	localScope := NewScopeTable("func_"+fnc.Name.Value, scope.scopeLevel+1, scope)
+	// custom function
+	if fnd, ok := scope.Get("_custom_func_" + fnc.Name.Value); ok {
+		if fn, ok := fnd.(*NodeFuncDef); ok {
+			return execCustomFunc(fnc, fn, scope)
+		}
+	}
 
-	// NOTICE: current only support built-in function
+	// builtin function
+	localScope := NewScopeTable("builtin_func_"+fnc.Name.Value, scope.scopeLevel+1, scope)
 	res := execBuiltinFunc(fnc, localScope)
 
 	return res
+}
+
+// register function declare
+func evalFuncDef(fnd *NodeFuncDef, scope *VariableScope) {
+	scope.Set("_custom_func_"+fnd.Name.Value, fnd)
+}
+
+// exec custom function
+func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope) (val interface{}) {
+	if len(fnc.Params) != len(fnd.Params) {
+		panic(fmt.Sprintf(
+			"%s() expects at least %d parameters, %d given",
+			fnc.Name.Value, len(fnd.Params), len(fnc.Params)),
+		)
+		return nil
+	}
+
+	localScope := NewScopeTable("custom_func_"+fnc.Name.Value, scope.scopeLevel+1, nil)
+	for i, p := range fnc.Params {
+		localScope.Set(fnd.Params[i].Name.Value, evalExpr(p, scope))
+	}
+
+	// before return, recover `return` statement
+	defer func() {
+		if e := recover(); e != nil {
+			if e, ok := e.(errReturn); ok {
+				val = e.val
+				return
+			}
+			panic(e)
+		}
+	}()
+
+	// eval body statements
+	evalStmts(fnd.Body, localScope, true)
+
+	return nil
 }
 
 // return the index value
@@ -397,75 +445,98 @@ func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
 }
 
 // if-else statement
-func evalIfStmt(expr *NodeIf, scope *VariableScope) interface{} {
-	if expr.Expr != nil {
-		ifExprVal := evalExpr(expr.Expr, scope)
-		if IsTrue(ifExprVal) {
-			for _, node := range expr.Body {
-				if breakLevel, an := needBreak(scope); an != nil {
-					if breakLevel < 0 {
-						return evalExpr(node, scope)
-					}
-					break
-				}
-				r := evalExpr(node, scope)
-				if isExport(node) {
-					return r
-				}
-			}
-		} else if expr.ElseIf != nil {
-			return evalIfStmt(expr.ElseIf, scope)
-		} else {
-			for _, node := range expr.Else {
-				evalExpr(node, scope)
-			}
-		}
+func evalIfStmt(expr *NodeIf, scope *VariableScope) (val interface{}) {
+	if expr.Expr == nil {
+		return
 	}
 
-	return nil
+	if IsTrue(evalExpr(expr.Expr, scope)) {
+		val = evalStmts(expr.Body, scope, false)
+	} else if expr.ElseIf != nil {
+		return evalIfStmt(expr.ElseIf, scope)
+	} else {
+		evalStmts(expr.Else, scope, false)
+	}
+
+	return
 }
 
 // while statement
-func evalWhileStmt(expr *NodeWhile, scope *VariableScope) interface{} {
-	breakLevel := 0
-	for IsTrue(evalExpr(expr.Expr, scope)) && breakLevel == 0 {
-		for _, sub := range expr.Body {
-			var an AstNode
-			if breakLevel, an = needBreak(scope); an != nil {
-				if breakLevel < 0 {
-					return evalExpr(sub, scope)
+func evalWhileStmt(expr *NodeWhile, scope *VariableScope) (val interface{}) {
+	if expr.Expr == nil {
+		return nil
+	}
+
+	for IsTrue(evalExpr(expr.Expr, scope)) {
+		var brk Symbol
+		brk, val = func() (brk Symbol, val interface{}) {
+			defer func() {
+				if e := recover(); e != nil {
+					switch e.(type) {
+					case errContinue:
+						brk = SymbolContinue
+					case errBreak:
+						brk = SymbolBreak
+					default:
+						panic(e)
+					}
 				}
-				break
-			}
-			if isExport(sub) {
-				return evalExpr(sub, scope)
-			}
+			}()
+
+			val = evalStmts(expr.Body, scope, false)
+			return
+		}()
+
+		if brk == SymbolContinue {
+			continue
+		} else if brk == SymbolBreak {
+			break
 		}
 	}
 
-	return nil
+	return
 }
 
-func needBreak(scope *VariableScope) (breakLevel int, an AstNode) {
-	breakLevel = 0
-	for idx, direct := range scope.directives {
-		switch direct.(type) {
-		case *NodeContinue:
-			an = direct
-			scope.directDel(idx)
+// eval statements, with return/break/continue
+// `isf` means function not support break/continue
+func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}) {
+	for _, node := range nodes {
+		val = evalExpr(node, scope)
+		if isExport(node) {
+			panic(errExport{val: val})
+		}
 
-		case *NodeBreak:
-			an = direct
-			scope.directDel(idx)
-			breakLevel = 1
+		switch node := node.(type) {
+		case *NodeReturn: // return
+			var ret = errReturn{
+				hasVal: true,
+			}
+			var tuples []interface{}
+			for _, a := range node.Tuples {
+				tuples = append(tuples, evalExpr(a, scope))
+			}
+			if len(tuples) == 0 {
+				ret.hasVal = false
+			} else if len(tuples) == 1 {
+				ret.val = tuples[0]
+			} else {
+				ret.val = tuples
+			}
+			panic(ret)
 
-		default:
-			if isExport(direct) {
-				an = direct
-				breakLevel = -1
+		case *NodeBreak: // break
+			if !isf {
+				panic(errBreak{})
+				return
+			}
+
+		case *NodeContinue: // continue
+			if !isf {
+				panic(errContinue{})
+				return
 			}
 		}
 	}
 
-	return breakLevel, an
+	return
 }

@@ -55,21 +55,21 @@ func (as NodeAssignOp) Format() string {
 // NodeFuncCallOp function call node
 type NodeFuncCallOp struct {
 	Ast
-	Name  NodeVariable
-	Param []AstNode
+	Name   NodeVariable
+	Params []AstNode
 }
 
 // Format .
-func (fu NodeFuncCallOp) Format() string {
+func (fnc NodeFuncCallOp) Format() string {
 	ps := ""
-	for idx, as := range fu.Param {
+	for idx, as := range fnc.Params {
 		if idx > 0 {
 			ps += ", "
 		}
 		ps += as.Format()
 	}
 
-	return fu.Name.Format() + "(" + ps + ")"
+	return fnc.Name.Format() + "(" + ps + ")"
 }
 
 // NodeVarIndex return the value of the specified index(list, string)
