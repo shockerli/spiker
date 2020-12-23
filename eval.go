@@ -29,11 +29,10 @@ func EvaluateWithScope(nodeList []AstNode, scope *VariableScope) (res interface{
 	}()
 
 	for _, node := range nodeList {
-		res = evalExpr(node, scope)
-
-		// special function export(), return the specified value
-		if isExport(node) {
-			return
+		// store the last expression value
+		v := evalExpr(node, scope)
+		if v != nil {
+			res = v
 		}
 	}
 
@@ -354,9 +353,10 @@ func evalFuncCall(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
 
 	// builtin function
 	localScope := NewScopeTable("builtin_func_"+fnc.Name.Value, scope.scopeLevel+1, scope)
-	res := execBuiltinFunc(fnc, localScope)
-
-	return res
+	if bfn, ok := builtinMap[fnc.Name.Value]; ok {
+		return bfn(fnc, localScope)
+	}
+	panic(fmt.Sprintf("call to undefined function %s()", fnc.Name.Value))
 }
 
 // register function declare
@@ -502,9 +502,6 @@ func evalWhileStmt(expr *NodeWhile, scope *VariableScope) (val interface{}) {
 func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}) {
 	for _, node := range nodes {
 		val = evalExpr(node, scope)
-		if isExport(node) {
-			panic(directiveExport{val: val})
-		}
 
 		switch node := node.(type) {
 		case *NodeReturn: // return

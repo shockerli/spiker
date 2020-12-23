@@ -5,62 +5,36 @@ import (
 	"unicode/utf8"
 )
 
-func execBuiltinFunc(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
-	switch fnc.Name.Value {
-	case "export":
-		if len(fnc.Params) != 1 {
-			panic(fmt.Sprintf("export() expects 1 parameters, %d given", len(fnc.Params)))
-		}
-		return export(fnc.Params[0], scope)
+type builtinFunc func(fnc *NodeFuncCallOp, scope *VariableScope) interface{}
 
-	case "len":
-		if len(fnc.Params) != 1 {
-			panic(fmt.Sprintf("len() expects 1 parameters, %d given", len(fnc.Params)))
-		}
-		return length(fnc.Params[0], scope)
+var builtinMap map[string]builtinFunc
 
-	case "exist":
-		if len(fnc.Params) != 1 {
-			panic(fmt.Sprintf("exist() expects 1 parameters, %d given", len(fnc.Params)))
-		}
-		switch fnc.Params[0].(type) {
-		case *NodeVarIndex, *NodeVariable:
-		default:
-			panic("exist() expects parameter variable or index")
-		}
-		return exist(fnc.Params[0], scope)
-
-	case "del":
-		if len(fnc.Params) < 1 {
-			panic(fmt.Sprintf("del() expects least 1 parameters, %d given", len(fnc.Params)))
-		}
-
-		for _, node := range fnc.Params {
-			del(node, scope)
-		}
-
-		return nil
-
-	default:
-		panic(fmt.Sprintf("call to undefined function %s()", fnc.Name.Value))
+func init() {
+	builtinMap = map[string]builtinFunc{
+		"export": export,
+		"len":    length,
+		"exist":  exist,
+		"del":    del,
+		"print":  prints,
 	}
 }
 
-// The export built-in function return the variable value
-func export(v AstNode, scope *VariableScope) interface{} {
-	return evalExpr(v, scope)
-}
-
-func isExport(node AstNode) bool {
-	if node == nil || node.Raw() == nil || node.Raw().children == nil {
-		return false
+// return the expression value, and interrupt script
+func export(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
+	if len(fnc.Params) != 1 {
+		panic(fmt.Sprintf("export() expects 1 parameters, %d given", len(fnc.Params)))
 	}
-	return isFuncCall(node.Raw()) && node.Raw().children[0].value == "export"
+
+	panic(directiveExport{val: evalExpr(fnc.Params[0], scope)})
 }
 
-// The length built-in function return the length of v
-func length(v AstNode, scope *VariableScope) int {
-	val := evalExpr(v, scope)
+// return the length of expression
+func length(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
+	if len(fnc.Params) != 1 {
+		panic(fmt.Sprintf("len() expects 1 parameters, %d given", len(fnc.Params)))
+	}
+
+	val := evalExpr(fnc.Params[0], scope)
 	switch val := val.(type) {
 	case int, float64:
 		return -1
@@ -75,18 +49,26 @@ func length(v AstNode, scope *VariableScope) int {
 	return -1
 }
 
-// Whether a variable or index is existed
-func exist(v AstNode, scope *VariableScope) bool {
-	switch v.(type) {
+// whether a variable or index is existed
+func exist(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
+	if len(fnc.Params) != 1 {
+		panic(fmt.Sprintf("exist() expects 1 parameters, %d given", len(fnc.Params)))
+	}
+	switch fnc.Params[0].(type) {
+	case *NodeVarIndex, *NodeVariable:
+	default:
+		panic("exist() expects parameter variable or index")
+	}
+
+	switch v := fnc.Params[0].(type) {
 	case *NodeVariable:
 		if _, ok := scope.Get(v.Format()); ok {
 			return true
 		}
 
 	case *NodeVarIndex:
-		vi := v.(*NodeVarIndex)
-		varVal := evalExpr(vi.Var, scope)
-		indexVal := evalExpr(vi.Index, scope)
+		varVal := evalExpr(v.Var, scope)
+		indexVal := evalExpr(v.Index, scope)
 		switch varVal := varVal.(type) {
 		case string, float64, int:
 			idx := int(Interface2Float64(indexVal))
@@ -114,51 +96,67 @@ func exist(v AstNode, scope *VariableScope) bool {
 	return false
 }
 
-// Delete a or more variable or index
-func del(v AstNode, scope *VariableScope) {
-	switch v := v.(type) {
-	case *NodeVariable:
-		scope.enclosingScope.Del(v.Format())
+// delete one or more variable or index
+func del(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
+	if len(fnc.Params) < 1 {
+		panic(fmt.Sprintf("del() expects least 1 parameters, %d given", len(fnc.Params)))
+	}
 
-	case *NodeVarIndex:
-		varVal := evalExpr(v.Var, scope)
-		indexVal := evalExpr(v.Index, scope)
-		switch varVal := varVal.(type) {
-		case ValueList:
-			idx := int(Interface2Float64(indexVal))
-			if len(varVal) <= idx {
-				return
-			}
+	for _, node := range fnc.Params {
+		switch v := node.(type) {
+		case *NodeVariable:
+			scope.enclosingScope.Del(v.Format())
 
-			// delete index
-			varVal = append(varVal[:idx], varVal[idx+1:]...)
-
-			// only delete a index from variable
-			switch vr := v.Var.(type) {
-			case *NodeVariable:
-				// self scope no value
-				if _, ok := scope.enclosingScope.Get(vr.Value); ok {
-					scope.enclosingScope.Set(vr.Value, varVal)
+		case *NodeVarIndex:
+			varVal := evalExpr(v.Var, scope)
+			indexVal := evalExpr(v.Index, scope)
+			switch varVal := varVal.(type) {
+			case ValueList:
+				idx := int(Interface2Float64(indexVal))
+				if len(varVal) <= idx {
+					continue
 				}
-			}
 
-		case ValueMap:
-			idx := Interface2String(indexVal)
-			if _, ok := varVal[idx]; !ok {
-				return
-			}
+				// delete index
+				varVal = append(varVal[:idx], varVal[idx+1:]...)
 
-			// delete key
-			delete(varVal, idx)
+				// only delete a index from variable
+				switch vr := v.Var.(type) {
+				case *NodeVariable:
+					// self scope no value
+					if _, ok := scope.enclosingScope.Get(vr.Value); ok {
+						scope.enclosingScope.Set(vr.Value, varVal)
+					}
+				}
 
-			// only delete a index from variable
-			switch vr := v.Var.(type) {
-			case *NodeVariable:
-				// self scope no value
-				if _, ok := scope.enclosingScope.Get(vr.Value); ok {
-					scope.enclosingScope.Set(vr.Value, varVal)
+			case ValueMap:
+				idx := Interface2String(indexVal)
+				if _, ok := varVal[idx]; !ok {
+					continue
+				}
+
+				// delete key
+				delete(varVal, idx)
+
+				// only delete a index from variable
+				switch vr := v.Var.(type) {
+				case *NodeVariable:
+					// self scope no value
+					if _, ok := scope.enclosingScope.Get(vr.Value); ok {
+						scope.enclosingScope.Set(vr.Value, varVal)
+					}
 				}
 			}
 		}
 	}
+
+	return nil
+}
+
+// print one or more expression value to the terminal
+func prints(fnc *NodeFuncCallOp, scope *VariableScope) interface{} {
+	for _, v := range fnc.Params {
+		fmt.Print(evalExpr(v, scope))
+	}
+	return nil
 }
