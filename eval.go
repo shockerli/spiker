@@ -19,7 +19,7 @@ func Evaluator(nodeList []AstNode) (res interface{}, err error) {
 func EvaluateWithScope(nodeList []AstNode, scope *VariableScope) (res interface{}, err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			if e, ok := e.(errExport); ok {
+			if e, ok := e.(directiveExport); ok {
 				res = e.val
 				return
 			}
@@ -382,7 +382,7 @@ func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope)
 	// before return, recover `return` statement
 	defer func() {
 		if e := recover(); e != nil {
-			if e, ok := e.(errReturn); ok {
+			if e, ok := e.(directiveReturn); ok {
 				val = e.val
 				return
 			}
@@ -473,9 +473,9 @@ func evalWhileStmt(expr *NodeWhile, scope *VariableScope) (val interface{}) {
 			defer func() {
 				if e := recover(); e != nil {
 					switch e.(type) {
-					case errContinue:
+					case directiveContinue:
 						brk = SymbolContinue
-					case errBreak:
+					case directiveBreak:
 						brk = SymbolBreak
 					default:
 						panic(e)
@@ -503,12 +503,12 @@ func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}
 	for _, node := range nodes {
 		val = evalExpr(node, scope)
 		if isExport(node) {
-			panic(errExport{val: val})
+			panic(directiveExport{val: val})
 		}
 
 		switch node := node.(type) {
 		case *NodeReturn: // return
-			var ret = errReturn{
+			var ret = directiveReturn{
 				hasVal: true,
 			}
 			var tuples []interface{}
@@ -526,13 +526,13 @@ func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}
 
 		case *NodeBreak: // break
 			if !isf {
-				panic(errBreak{})
+				panic(directiveBreak{})
 				return
 			}
 
 		case *NodeContinue: // continue
 			if !isf {
-				panic(errContinue{})
+				panic(directiveContinue{})
 				return
 			}
 		}

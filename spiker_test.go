@@ -34,7 +34,7 @@ c = add(1, 2);
 export(c);
 `, float64(3)},
 
-{`
+		{`
 add = (a, b) -> {
   return a + b;
 };
@@ -50,11 +50,26 @@ while (true) {
 export(a);
 `, float64(21)},
 
-{`
+		{`
 n2 = x -> x * x;
 a = n2(5);
 export(a);
 `, float64(25)},
+
+		{`
+a = 1;
+while (true) {
+	a += 2;
+	if (a > 10) {
+		break;
+	} else if (a < 10) {
+		a -= 1;
+	} else {
+		continue;
+	}
+}
+export(a);
+`, float64(12)},
 	}
 
 	for index, tt := range tests {
@@ -86,6 +101,10 @@ func TestFormat(t *testing.T) {
 	}{
 		{`a=1;b+=2;`, `a = 1;
 b += 2;`},
+
+		{`add=(a,b) -> a+b; c = add (1,2 ); export(c );`, `add = (a, b) -> a + b;
+c = add(1, 2);
+export(c);`},
 	}
 	for index, tt := range tests {
 		val, err := spiker.Format(tt.input)
@@ -118,6 +137,7 @@ func TestExecuteWithScope(t *testing.T) {
 		{"nil", "a * b", nil, nil, true},
 		{"mul", "a * b", scopes, float64(12), false},
 		{"add", "a + b", scopes, float64(7), false},
+		{"logical-1", "(a + b) > (a * b)", scopes, false, false},
 	}
 
 	for _, tt := range tests {
