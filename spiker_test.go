@@ -25,6 +25,36 @@ func TestEvaluate(t *testing.T) {
 		{`2 in [1,2,3];`, true},
 		{`!a`, true},
 		{`~8`, -9},
+		{`
+add = (a, b) -> {
+  return a + b;
+};
+
+c = add(1, 2);
+export(c);
+`, float64(3)},
+
+{`
+add = (a, b) -> {
+  return a + b;
+};
+
+a = 0;
+b = 3;
+while (true) {
+	a += add(a, 3);
+	if (a > 10) {
+		break;
+	}
+}
+export(a);
+`, float64(21)},
+
+{`
+n2 = x -> x * x;
+a = n2(5);
+export(a);
+`, float64(25)},
 	}
 
 	for index, tt := range tests {

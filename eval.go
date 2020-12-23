@@ -371,7 +371,7 @@ func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope)
 			"%s() expects at least %d parameters, %d given",
 			fnc.Name.Value, len(fnd.Params), len(fnc.Params)),
 		)
-		return nil
+		return
 	}
 
 	localScope := NewScopeTable("custom_func_"+fnc.Name.Value, scope.scopeLevel+1, nil)
@@ -391,9 +391,9 @@ func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope)
 	}()
 
 	// eval body statements
-	evalStmts(fnd.Body, localScope, true)
+	val = evalStmts(fnd.Body, localScope, true)
 
-	return nil
+	return
 }
 
 // return the index value
@@ -455,7 +455,7 @@ func evalIfStmt(expr *NodeIf, scope *VariableScope) (val interface{}) {
 	} else if expr.ElseIf != nil {
 		return evalIfStmt(expr.ElseIf, scope)
 	} else {
-		evalStmts(expr.Else, scope, false)
+		val = evalStmts(expr.Else, scope, false)
 	}
 
 	return
@@ -464,7 +464,7 @@ func evalIfStmt(expr *NodeIf, scope *VariableScope) (val interface{}) {
 // while statement
 func evalWhileStmt(expr *NodeWhile, scope *VariableScope) (val interface{}) {
 	if expr.Expr == nil {
-		return nil
+		return
 	}
 
 	for IsTrue(evalExpr(expr.Expr, scope)) {
