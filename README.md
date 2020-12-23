@@ -140,6 +140,33 @@ del(a, b[1])
 del(a[i], b[i])
 ```
 
+### Custom function
+- single
+```js
+sum = (a, b) -> a + b;
+
+export(sum(1, 2)); # 3
+```
+
+```js
+pow2 = x -> x ** 2;
+
+export(pow2(5)); # 25
+```
+
+- block
+```js
+max = (a, b) -> {
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
+};
+
+export(max(1, 2)); # 2
+```
+
 ### Control structures
 ```js
 if (a > b && c != d) {

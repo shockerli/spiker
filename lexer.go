@@ -162,7 +162,7 @@ func (lex *Lexer) consumeWhitespace() {
 
 func (lex *Lexer) consumeComments() {
 	r, size := utf8.DecodeRuneInString(lex.source[lex.index:])
-	if Symbol(r) == SymbolComment {
+	if Symbol(r) == SymbolPound {
 		for size > 0 && r != '\n' {
 			lex.col++
 			lex.index += size

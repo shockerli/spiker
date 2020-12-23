@@ -5,11 +5,14 @@ import (
 	"unicode/utf8"
 )
 
+// builtin function type
 type builtinFunc func(fnc *NodeFuncCallOp, scope *VariableScope) interface{}
 
+// builtin function pool
 var builtinMap map[string]builtinFunc
 
 func init() {
+	// init builtin function
 	builtinMap = map[string]builtinFunc{
 		"export": export,
 		"len":    length,

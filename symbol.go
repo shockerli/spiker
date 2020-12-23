@@ -9,14 +9,14 @@ func (sym Symbol) String() string {
 
 // Supported symbol
 const (
-	SymbolIdent   Symbol = "(IDENT)"
-	SymbolNumber  Symbol = "(NUMBER)"
-	SymbolString  Symbol = "(STRING)"
-	SymbolEOF     Symbol = "(EOF)"
-	SymbolTuple   Symbol = "()"
-	SymbolArray   Symbol = "[]"
-	SymbolMap     Symbol = "{}"
-	SymbolComment Symbol = "#"
+	SymbolIdent  Symbol = "(IDENT)"
+	SymbolNumber Symbol = "(NUMBER)"
+	SymbolString Symbol = "(STRING)"
+	SymbolEOF    Symbol = "(EOF)"
+	SymbolTuple  Symbol = "()"
+	SymbolArray  Symbol = "[]"
+	SymbolMap    Symbol = "{}"
+	SymbolPound  Symbol = "#"
 
 	SymbolTrue     Symbol = "true"
 	SymbolFalse    Symbol = "false"
@@ -39,6 +39,7 @@ const (
 	SymbolComma       Symbol = ","
 	SymbolFuncDeclare Symbol = "->"
 
+	// mathematical
 	SymbolAdd Symbol = "+"
 	SymbolSub Symbol = "-"
 	SymbolMul Symbol = "*"
@@ -47,6 +48,7 @@ const (
 	SymbolPow Symbol = "**"
 	SymbolIn  Symbol = "in"
 
+	// bit arithmetic
 	SymbolAnd Symbol = "&"
 	SymbolOr  Symbol = "|"
 	SymbolXor Symbol = "^"
@@ -54,10 +56,12 @@ const (
 	SymbolSHL Symbol = "<<"
 	SymbolSHR Symbol = ">>"
 
+	// logic
 	SymbolLogicNot Symbol = "!"
 	SymbolLogicAnd Symbol = "&&"
 	SymbolLogicOr  Symbol = "||"
 
+	// assignment
 	SymbolAssign    Symbol = "="
 	SymbolAssignAdd Symbol = "+="
 	SymbolAssignSub Symbol = "-="
@@ -65,6 +69,7 @@ const (
 	SymbolAssignDiv Symbol = "/="
 	SymbolAssignMod Symbol = "%="
 
+	// comparison
 	SymbolEQL Symbol = "=="
 	SymbolNEQ Symbol = "!="
 	SymbolGTR Symbol = ">"
