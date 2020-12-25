@@ -12,6 +12,7 @@ func TestEvaluate(t *testing.T) {
 		input  string
 		expect interface{}
 	}{
+		// simple expression
 		{`10;`, float64(10)},
 		{`1 + 2 - 3 * 4 / 5;`, 0.6},
 		{`1 + "234";`, float64(235)},
@@ -23,8 +24,15 @@ func TestEvaluate(t *testing.T) {
 		{`123 in "abc234";`, false},
 		{`23 in "abc234";`, true},
 		{`2 in [1,2,3];`, true},
+		{`2 in [1:1,2:2,3:3];`, true},
+		{`2 in [1:111,2:222,3:333];`, false},
 		{`!a`, true},
 		{`~8`, -9},
+		{`(1 > 2) || (1 < 2)`, true},
+		{`(1 > 2) && (1 < 2)`, false},
+		{`1 > 2 > 3`, false},
+
+		// custom function
 		{`
 add = (a, b) -> {
   return a + b;
@@ -56,6 +64,7 @@ a = n2(5);
 export(a);
 `, float64(25)},
 
+		// control
 		{`
 a = 1;
 while (true) {
@@ -75,7 +84,7 @@ export(a);
 	for index, tt := range tests {
 		val, err := spiker.Execute(tt.input)
 		if val != tt.expect {
-			t.Errorf("test[%d], expected = %v, got = %v", index, tt.expect, val)
+			t.Errorf("test[%d], input[ %s ], expected = %v, got = %v", index, tt.input, tt.expect, val)
 		} else if err != nil {
 			t.Error(err.Error())
 		}
