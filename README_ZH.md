@@ -1,29 +1,29 @@
 # Spiker
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/shockerli/spiker)](https://pkg.go.dev/github.com/shockerli/spiker)
-> A Go package implementation of real-time computing
+> 实时规则计算引擎
 >
 > lexer is inspired by [tdop](https://github.com/cristiandima/tdop)
 
-[中文](README_ZH.md)
+[英文](README.md)
 
-## Install
+## 安装
 ```sh
 go get -u github.com/shockerli/spiker
 ```
 
-## Examples
+## 示例
 
-### Keywords
+### 关键词
 ```js
 true/false/if/else/in/...
 ```
 
-### Instruction separation
-Spiker requires instructions to be terminated with a semicolon at the end of each statement
+### 指令分隔符
+每个语句后用英文分号（;）结束指令
 
-### Data type
-- Number
-> Integer, Float
+### 数据类型
+- 数字
+> 整型/浮点型
 ```js
 123;
 -123;
@@ -31,39 +31,39 @@ Spiker requires instructions to be terminated with a semicolon at the end of eac
 -12.34;
 ```
 
-- String
+- 字符串
 ```js
 "abc"
 ```
 
-- Boolean
+- 布尔
 ```js
 true;
 false;
 ```
 
-- Array
+- 数组
 ```js
 [];
 [1, 2, "a"];
 [1, [], [2,], [3, 4,], 5];
 ```
 
-- Dict
+- 字典
 ```js
 v = [9:99, 8:8.8, "hello":12.02];
 v = ["name":"jioby", "age":18, "log":[1:2, 3:4]];
 v = [1, 9:9.9, 3];
 ```
 
-### Arithmetic Operators
+### 算术运算符
 ```js
 1 + 2 - 3 * 4 / 5 % 6;
 -0.19 + 3.2983;
 3 ** 2;
 ```
 
-### Bitwise Operators
+### 位运算符
 ```js
 1 & 2;
 1 | 2;
@@ -72,7 +72,7 @@ v = [1, 9:9.9, 3];
 1 << 2;
 ```
 
-### Comparison Operators
+### 比较运算符
 ```js
 3 == 2;
 3 != 2;
@@ -82,14 +82,14 @@ v = [1, 9:9.9, 3];
 3 <= 2;
 ```
 
-### Logical Operators
+### 逻辑运算符
 ```js
 !2;
 1 && 2;
 1 || 2;
 ```
 
-### Assignment Operators
+### 赋值运算符
 ```js
 v = 2;
 v += 2;
@@ -109,7 +109,7 @@ a = b = c = 100;
 9 in "123456789"; // true
 ```
 
-### Build-in functions
+### 内置函数
 - export
 > return the expression value and interrupt script
 ```js
@@ -125,7 +125,7 @@ exist(v[i]);
 ```
 
 - len
-> return the length of a value
+> 返回值的长度或数量
 ```js
 len("123");
 len(v);
@@ -133,7 +133,7 @@ len(v[i]);
 ```
 
 - del
-> delete one or more variable or index
+> 删除一个或多个的变量或索引
 ```js
 del(a)
 del(a, b)
@@ -141,8 +141,8 @@ del(a, b[1])
 del(a[i], b[i])
 ```
 
-### Custom function
-- single
+### 自定义函数
+- 单行函数
 
 ```js
 sum = (a, b) -> a + b;
@@ -156,7 +156,7 @@ pow2 = x -> x ** 2;
 export(pow2(5)); # 25
 ```
 
-- block
+- 块函数
 
 ```js
 max = (a, b) -> {
@@ -170,7 +170,7 @@ max = (a, b) -> {
 export(max(1, 2)); # 2
 ```
 
-### Control structures
+### 流程控制
 
 - if/else
 
@@ -197,7 +197,7 @@ while (true) {
 ```
 
 
-### More
+### 更多
 ```js
 a = 101;
 b = 102;
