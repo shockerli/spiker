@@ -371,7 +371,6 @@ func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope)
 			"%s() expects at least %d parameters, %d given",
 			fnc.Name.Value, len(fnd.Params), len(fnc.Params)),
 		)
-		return
 	}
 
 	localScope := NewScopeTable("custom_func_"+fnc.Name.Value, scope.scopeLevel+1, nil)
@@ -524,13 +523,11 @@ func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}
 		case *NodeBreak: // break
 			if !isf {
 				panic(directiveBreak{})
-				return
 			}
 
 		case *NodeContinue: // continue
 			if !isf {
 				panic(directiveContinue{})
-				return
 			}
 		}
 	}

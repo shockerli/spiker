@@ -3,17 +3,17 @@ b = 102;
 c = "103";
 d = [1, 2, a, b, c+b, "abc"];
 
-if (a > b) {
-    d = 1000 + a;
-} else if (a < b) {
-    if (c) {
-        d = -1000;
-    } else {
-        d = 0;
-    }
+add = x -> {
+	while (x > 0) {
+		x = x - 1;
+		if (x == 5) {
+			continue;
+		} else if (x == 3) {
+			return len(d) ** 2;
+			break;
+		}
+	}
+	return x;
+};
 
-    d += len(c);
-    export(d);
-}
-
-export(d);
+export(add(a));

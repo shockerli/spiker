@@ -359,9 +359,5 @@ func isSingleFuncStmt(token *Token) bool {
 
 	}
 
-	if isFuncCall(token) {
-		return true
-	}
-
-	return false
+	return isFuncCall(token)
 }
