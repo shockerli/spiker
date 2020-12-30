@@ -111,14 +111,14 @@ a = b = c = 100;
 
 ### 内置函数
 - export
-> return the expression value and interrupt script
+> 中断脚本，并返回表达式的值
 ```js
 export(v);
 export(v[i]);
 ```
 
 - exist
-> determines whether a variable or index exists
+> 判断变量或索引是否存在
 ```js
 exist(v);
 exist(v[i]);
