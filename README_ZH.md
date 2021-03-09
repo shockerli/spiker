@@ -1,5 +1,5 @@
 # Spiker
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/shockerli/spiker)](https://pkg.go.dev/github.com/shockerli/spiker)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/shockerli/spiker)](https://pkg.go.dev/github.com/shockerli/spiker) [![Go Report Card](https://goreportcard.com/badge/github.com/shockerli/spiker)](https://goreportcard.com/report/github.com/shockerli/spiker)
 > 实时规则计算引擎
 >
 > lexer is inspired by [tdop](https://github.com/cristiandima/tdop)
