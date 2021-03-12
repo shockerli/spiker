@@ -5,12 +5,40 @@
 >
 > lexer is inspired by [tdop](https://github.com/cristiandima/tdop)
 
-[英文](README.md)
+[English](README.md)
+
 
 ## 安装
 ```sh
 go get -u github.com/shockerli/spiker
 ```
+
+
+## 使用
+
+- Execute
+
+
+```go
+spiker.Execute(`1 + 2 * 3 / 4`)
+```
+
+- ExecuteWithScope
+
+```go
+var scopes = spiker.NewScopeTable("demo", 1, nil)
+scopes.Set("a", 3)
+scopes.Set("b", 4)
+
+spiker.ExecuteWithScope(`a * 2 + b`, )
+```
+
+- Format
+
+```go
+spiker.Format(`a + b * 3`)
+```
+
 
 ## 示例
 
@@ -220,3 +248,7 @@ if (a > b) {
 
 export(d[2]);
 ```
+
+
+## 开源协议
+This project is licensed under the terms of the [MIT](LICENSE) license.

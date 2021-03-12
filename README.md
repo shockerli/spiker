@@ -12,6 +12,33 @@
 go get -u github.com/shockerli/spiker
 ```
 
+
+## Usage
+
+- Execute
+
+
+```go
+spiker.Execute(`1 + 2 * 3 / 4`)
+```
+
+- ExecuteWithScope
+
+```go
+var scopes = spiker.NewScopeTable("demo", 1, nil)
+scopes.Set("a", 3)
+scopes.Set("b", 4)
+
+spiker.ExecuteWithScope(`a * 2 + b`, )
+```
+
+- Format
+
+```go
+spiker.Format(`a + b * 3`)
+```
+
+
 ## Examples
 
 ### Keywords
@@ -220,3 +247,7 @@ if (a > b) {
 
 export(d[2]);
 ```
+
+
+## License
+This project is licensed under the terms of the [MIT](LICENSE) license.
