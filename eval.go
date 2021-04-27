@@ -30,7 +30,7 @@ func EvaluateWithScope(nodeList []AstNode, scope *VariableScope) (res interface{
 
 	for _, node := range nodeList {
 		// store the last expression value
-		v := evalExpr(node, scope)
+		v := EvalExpr(node, scope)
 		if v != nil {
 			res = v
 		}
@@ -40,8 +40,8 @@ func EvaluateWithScope(nodeList []AstNode, scope *VariableScope) (res interface{
 	return
 }
 
-// returns the value of the expression
-func evalExpr(node AstNode, scope *VariableScope) interface{} {
+// EvalExpr returns the value of the expression
+func EvalExpr(node AstNode, scope *VariableScope) interface{} {
 	switch node := node.(type) {
 	case *NodeAssignOp:
 		return evalAssign(node, scope)
@@ -102,7 +102,7 @@ func evalVariable(expr *NodeVariable, scope *VariableScope) interface{} {
 func evalMap(expr *NodeMap, scope *VariableScope) interface{} {
 	dict := make(ValueMap)
 	for idx, val := range expr.Map {
-		dict[Interface2String(evalExpr(idx, scope))] = evalExpr(val, scope)
+		dict[Interface2String(EvalExpr(idx, scope))] = EvalExpr(val, scope)
 	}
 	return dict
 }
@@ -111,7 +111,7 @@ func evalMap(expr *NodeMap, scope *VariableScope) interface{} {
 func evalList(expr *NodeList, scope *VariableScope) interface{} {
 	list := make(ValueList, 0)
 	for _, sub := range expr.List {
-		list = append(list, evalExpr(sub, scope))
+		list = append(list, EvalExpr(sub, scope))
 	}
 	return list
 }
@@ -119,7 +119,7 @@ func evalList(expr *NodeList, scope *VariableScope) interface{} {
 // assign and return a value
 func evalAssign(expr *NodeAssignOp, scope *VariableScope) interface{} {
 	name := expr.Var.Value
-	exprVal := evalExpr(expr.Expr, scope)
+	exprVal := EvalExpr(expr.Expr, scope)
 	initVal, ok := scope.Get(name) // original value
 	// initial value
 	if !ok {
@@ -159,7 +159,7 @@ func evalAssign(expr *NodeAssignOp, scope *VariableScope) interface{} {
 
 // evalUnary unary operation
 func evalUnary(expr *NodeUnaryOp, scope *VariableScope) interface{} {
-	right := evalExpr(expr.Right, scope)
+	right := EvalExpr(expr.Right, scope)
 
 	switch expr.Op {
 	case SymbolLogicNot:
@@ -178,8 +178,8 @@ func evalUnary(expr *NodeUnaryOp, scope *VariableScope) interface{} {
 
 // evalBinary binary operator
 func evalBinary(expr *NodeBinaryOp, scope *VariableScope) interface{} {
-	left := evalExpr(expr.Left, scope)
-	right := evalExpr(expr.Right, scope)
+	left := EvalExpr(expr.Left, scope)
+	right := EvalExpr(expr.Right, scope)
 
 	switch expr.Op {
 	case SymbolAdd, SymbolSub, SymbolMul, SymbolDiv, SymbolMod, SymbolPow,
@@ -375,7 +375,7 @@ func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope)
 
 	localScope := NewScopeTable("custom_func_"+fnc.Name.Value, scope.scopeLevel+1, nil)
 	for i, p := range fnc.Params {
-		localScope.Set(fnd.Params[i].Name.Value, evalExpr(p, scope))
+		localScope.Set(fnd.Params[i].Name.Value, EvalExpr(p, scope))
 	}
 
 	// before return, recover `return` statement
@@ -397,10 +397,10 @@ func execCustomFunc(fnc *NodeFuncCallOp, fnd *NodeFuncDef, scope *VariableScope)
 
 // return the index value
 func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
-	varVal := evalExpr(vi.Var, scope)
+	varVal := EvalExpr(vi.Var, scope)
 	switch varVal := varVal.(type) {
 	case string:
-		idx := int(evalExpr(vi.Index, scope).(float64))
+		idx := int(EvalExpr(vi.Index, scope).(float64))
 		r := []rune(varVal)
 		if len(r) > idx {
 			return string(r[idx])
@@ -408,7 +408,7 @@ func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
 		panic(fmt.Sprintf("RUNTIME ERROR: undefined offset %d", idx))
 
 	case float64:
-		idx := int(evalExpr(vi.Index, scope).(float64))
+		idx := int(EvalExpr(vi.Index, scope).(float64))
 		r := strconv.FormatFloat(varVal, 'f', -1, 64)
 		if len(r) > idx {
 			return r[idx]
@@ -416,7 +416,7 @@ func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
 		panic(fmt.Sprintf("RUNTIME ERROR: undefined offset %d", idx))
 
 	case int:
-		idx := int(evalExpr(vi.Index, scope).(float64))
+		idx := int(EvalExpr(vi.Index, scope).(float64))
 		r := strconv.Itoa(varVal)
 		if len(r) > idx {
 			return r[idx]
@@ -424,7 +424,7 @@ func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
 		panic(fmt.Sprintf("RUNTIME ERROR: undefined offset %d", idx))
 
 	case ValueList:
-		idx := int(evalExpr(vi.Index, scope).(float64))
+		idx := int(EvalExpr(vi.Index, scope).(float64))
 		r := varVal
 		if len(r) > idx {
 			return r[idx]
@@ -432,7 +432,7 @@ func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
 		panic(fmt.Sprintf("RUNTIME ERROR: undefined offset %d", idx))
 
 	case ValueMap:
-		idx := Interface2String(evalExpr(vi.Index, scope))
+		idx := Interface2String(EvalExpr(vi.Index, scope))
 		r := varVal
 		if val, ok := r[idx]; ok {
 			return val
@@ -449,7 +449,7 @@ func evalIfStmt(expr *NodeIf, scope *VariableScope) (val interface{}) {
 		return
 	}
 
-	if IsTrue(evalExpr(expr.Expr, scope)) {
+	if IsTrue(EvalExpr(expr.Expr, scope)) {
 		val = evalStmts(expr.Body, scope, false)
 	} else if expr.ElseIf != nil {
 		return evalIfStmt(expr.ElseIf, scope)
@@ -466,7 +466,7 @@ func evalWhileStmt(expr *NodeWhile, scope *VariableScope) (val interface{}) {
 		return
 	}
 
-	for IsTrue(evalExpr(expr.Expr, scope)) {
+	for IsTrue(EvalExpr(expr.Expr, scope)) {
 		var brk Symbol
 		brk, val = func() (brk Symbol, val interface{}) {
 			defer func() {
@@ -500,7 +500,7 @@ func evalWhileStmt(expr *NodeWhile, scope *VariableScope) (val interface{}) {
 // `isf` means function not support break/continue
 func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}) {
 	for _, node := range nodes {
-		val = evalExpr(node, scope)
+		val = EvalExpr(node, scope)
 
 		switch node := node.(type) {
 		case *NodeReturn: // return
@@ -509,7 +509,7 @@ func evalStmts(nodes []AstNode, scope *VariableScope, isf bool) (val interface{}
 			}
 			var tuples []interface{}
 			for _, a := range node.Tuples {
-				tuples = append(tuples, evalExpr(a, scope))
+				tuples = append(tuples, EvalExpr(a, scope))
 			}
 			if len(tuples) == 0 {
 				ret.hasVal = false
