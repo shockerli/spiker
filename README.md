@@ -38,6 +38,9 @@ spiker.ExecuteWithScope(`a * 2 + b`, )
 spiker.Format(`a + b * 3`)
 ```
 
+## Architecture
+![architecture](architecture.png)
+
 
 ## Examples
 

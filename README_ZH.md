@@ -39,6 +39,13 @@ spiker.ExecuteWithScope(`a * 2 + b`, )
 spiker.Format(`a + b * 3`)
 ```
 
+## 架构
+- 包结构
+![architecture](architecture.png)
+
+- 流程图
+![flow.png](flow.png)
+
 
 ## 示例
 
