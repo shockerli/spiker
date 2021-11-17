@@ -1,11 +1,14 @@
 # Spiker
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/shockerli/spiker)](https://pkg.go.dev/github.com/shockerli/spiker) [![Go Report Card](https://goreportcard.com/badge/github.com/shockerli/spiker)](https://goreportcard.com/report/github.com/shockerli/spiker) [![Build Status](https://travis-ci.com/shockerli/spiker.svg?branch=master)](https://travis-ci.com/shockerli/spiker)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/shockerli/spiker)](https://pkg.go.dev/github.com/shockerli/spiker)
+[![Go Report Card](https://goreportcard.com/badge/github.com/shockerli/spiker)](https://goreportcard.com/report/github.com/shockerli/spiker)
+[![codecov](https://codecov.io/gh/shockerli/spiker/branch/master/graph/badge.svg)](https://codecov.io/gh/shockerli/spiker)
+![GitHub top language](https://img.shields.io/github/languages/top/shockerli/spiker)
 
 > 实时规则计算引擎
 >
 > lexer is inspired by [tdop](https://github.com/cristiandima/tdop)
 
-[English](README.md)
+中文 | [English](README.md)
 
 
 ## 安装
