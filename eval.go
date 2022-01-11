@@ -212,7 +212,12 @@ func calcIn(elem interface{}, set interface{}) bool {
 				return true
 			}
 		}
-
+	case []interface{}:
+		for _, v := range set {
+			if leftString == Interface2String(v) {
+				return true
+			}
+		}
 	case ValueMap:
 		for _, v := range set {
 			if leftString == Interface2String(v) {
