@@ -3,7 +3,7 @@ package spiker_test
 import (
 	"testing"
 
-	"github.com/shockerli/spiker"
+	"github.com/c5433137/spiker"
 )
 
 func TestNodeIf_String(t *testing.T) {

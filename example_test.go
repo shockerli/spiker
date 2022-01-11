@@ -3,7 +3,7 @@ package spiker_test
 import (
 	"fmt"
 
-	"github.com/shockerli/spiker"
+	"github.com/c5433137/spiker"
 )
 
 // ExampleExecute
