@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/shockerli/spiker"
+	"github.com/c5433137/spiker"
 )
 
 func TestEvaluate(t *testing.T) {
