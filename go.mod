@@ -1,4 +1,3 @@
 module github.com/c5433137/spiker
 
-go 1.13
- 
+go 1.16

@@ -55,6 +55,8 @@ func registerLen() {
 			return utf8.RuneCountInString(val)
 		case ValueList:
 			return len(val)
+		case []interface{}:
+			return len(val)
 		case ValueMap:
 			return len(val)
 		}
@@ -91,7 +93,12 @@ func registerExist() {
 				if utf8.RuneCountInString(Interface2String(varVal)) > idx {
 					return true
 				}
-
+			case []interface{}:
+				idx := int(Interface2Float64(indexVal))
+				r := varVal
+				if len(r) > idx {
+					return true
+				}
 			case ValueList:
 				idx := int(Interface2Float64(indexVal))
 				r := varVal
@@ -147,7 +154,23 @@ func registerDel() {
 							scope.enclosingScope.Set(vr.Value, varVal)
 						}
 					}
+				case []interface{}:
+					idx := int(Interface2Float64(indexVal))
+					if len(varVal) <= idx {
+						continue
+					}
 
+					// delete index
+					varVal = append(varVal[:idx], varVal[idx+1:]...)
+
+					// only delete a index from variable
+					switch vr := v.Var.(type) {
+					case *NodeVariable:
+						// self scope no value
+						if _, ok := scope.enclosingScope.Get(vr.Value); ok {
+							scope.enclosingScope.Set(vr.Value, varVal)
+						}
+					}
 				case ValueMap:
 					idx := Interface2String(indexVal)
 					if _, ok := varVal[idx]; !ok {

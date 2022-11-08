@@ -435,7 +435,13 @@ func evalVarIndex(vi *NodeVarIndex, scope *VariableScope) interface{} {
 			return r[idx]
 		}
 		panic(fmt.Sprintf("RUNTIME ERROR: undefined offset %d", idx))
-
+	case []interface{}:
+		idx := int(EvalExpr(vi.Index, scope).(float64))
+		r := varVal
+		if len(r) > idx {
+			return r[idx]
+		}
+		panic(fmt.Sprintf("RUNTIME ERROR: undefined offset %d", idx))
 	case ValueMap:
 		idx := Interface2String(EvalExpr(vi.Index, scope))
 		r := varVal

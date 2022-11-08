@@ -64,7 +64,8 @@ func IsTrue(value interface{}) bool {
 
 	case bool:
 		return value
-
+	case []interface{}:
+		return len(value) > 0
 	case ValueList:
 		return len(value) > 0
 
@@ -89,7 +90,9 @@ func Interface2String(inter interface{}) string {
 			return "1"
 		}
 		return ""
-
+	case []interface{}:
+		js, _ := json.Marshal(inter)
+		return string(js)
 	// just for compare
 	case ValueList, ValueMap:
 		js, _ := json.Marshal(inter)
