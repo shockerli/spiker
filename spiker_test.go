@@ -184,7 +184,7 @@ func BenchmarkExecuteWithScope(b *testing.B) {
 }
 
 func TestExecute1WithScopeWithCacheAst(t *testing.T) {
-	code := `1*2+12341234123/453245+3241234  `
+	code := `1*2+12341234123/453245+3241234   `
 	var scopes = spiker.NewScopeTable("demo", 1, nil)
 	for i := 0; i < 1; i++ {
 		val, err := spiker.ExecuteWithScope(code, scopes)
