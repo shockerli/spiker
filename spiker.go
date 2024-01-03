@@ -1,6 +1,9 @@
 package spiker
 
-import "strings"
+import (
+	"strings"
+	"sync"
+)
 
 // Execute return the computed result of a string expression
 func Execute(code string) (val interface{}, err error) {
@@ -70,4 +73,44 @@ func padSemicolon(code string) string {
 		code += SymbolSemicolon.String()
 	}
 	return code
+}
+
+// ExecuteWithScopeWithCacheAst return the execute result with scope
+func ExecuteWithScopeWithCacheAst(code string, scope *VariableScope) (val interface{}, err error) {
+
+	ast, err := GetAstWithCache(code)
+	if err != nil {
+		return
+	}
+	return EvaluateWithScope(ast, scope)
+}
+
+var cacheAst = sync.Map{}
+
+// GetAstWithCache return the ast of script
+func GetAstWithCache(code string) (nodeList []AstNode, err error) {
+	if val, ok := cacheAst.Load(code); ok {
+		//fmt.Printf(" cached\n")
+		return val.([]AstNode), nil
+	}
+
+	codeold := code
+	code = padSemicolon(code)
+
+	lexer := NewLexer(code)
+	p := Parser{Lexer: lexer}
+
+	stmts, err := p.Statements()
+	if err != nil {
+		return
+	}
+
+	ast, err := Transform(stmts)
+	if err != nil {
+		return
+	}
+
+	cacheAst.Store(codeold, ast)
+
+	return ast, err
 }

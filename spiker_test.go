@@ -1,6 +1,7 @@
 package spiker_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -35,7 +36,7 @@ func TestEvaluate(t *testing.T) {
 		// custom function
 		{`
 add = (a, b) -> {
-  return a + b;
+ return a + b;
 };
 
 c = add(1, 2);
@@ -44,7 +45,7 @@ export(c);
 
 		{`
 add = (a, b) -> {
-  return a + b;
+ return a + b;
 };
 
 a = 0;
@@ -160,5 +161,34 @@ func TestExecuteWithScope(t *testing.T) {
 				t.Errorf("ExecuteWithScope() gotVal = %v, want %v", gotVal, tt.wantVal)
 			}
 		})
+	}
+}
+
+func BenchmarkExecuteWithScopeWithCacheAst(b *testing.B) {
+	code := `1*2+12341234123/453245+3241234`
+	var scopes = spiker.NewScopeTable("demo", 1, nil)
+
+	for i := 0; i < b.N; i++ {
+
+		spiker.ExecuteWithScopeWithCacheAst(code, scopes)
+	}
+}
+func BenchmarkExecuteWithScope(b *testing.B) {
+	code := `1*2+12341234123/453245+3241234`
+	var scopes = spiker.NewScopeTable("demo", 1, nil)
+	for i := 0; i < b.N; i++ {
+
+		spiker.ExecuteWithScope(code, scopes)
+	}
+
+}
+
+func TestExecute1WithScopeWithCacheAst(t *testing.T) {
+	code := `1*2+12341234123/453245+3241234`
+	var scopes = spiker.NewScopeTable("demo", 1, nil)
+	for i := 0; i < 1; i++ {
+		val, err := spiker.ExecuteWithScope(code, scopes)
+
+		fmt.Printf("val=%v,err=%v\n", val, err)
 	}
 }
