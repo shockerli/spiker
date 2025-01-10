@@ -18,6 +18,16 @@ func NewScopeTable(scopeName string, scopeLevel int, scope *VariableScope) *Vari
 	return vs
 }
 
+// NewScopeTable return a new VariableScope
+func NewScopeTableCap(scopeName string, scopeLevel int, scope *VariableScope, cap int) *VariableScope {
+	vs := &VariableScope{}
+	vs.vars = make(map[string]interface{}, cap)
+	vs.scopeName = scopeName
+	vs.scopeLevel = scopeLevel
+	vs.enclosingScope = scope
+	return vs
+}
+
 // Set store variable values
 func (scope *VariableScope) Set(variable string, val interface{}) {
 	scope.vars[variable] = val
