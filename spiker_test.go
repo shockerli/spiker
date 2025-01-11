@@ -103,6 +103,19 @@ func BenchmarkExecute(b *testing.B) {
 	}
 }
 
+func BenchmarkParseAst(b *testing.B) {
+	spiker.EnableAstCache = true // enable ast cache
+	src := readFile("testdata/collect.src")
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if _, err := spiker.ParseAst(src); err != nil {
+			b.Log(err)
+			b.Fail()
+		}
+	}
+}
+
 func TestFormat(t *testing.T) {
 	tests := []struct {
 		input  string
