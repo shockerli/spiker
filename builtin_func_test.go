@@ -41,7 +41,11 @@ func TestBuiltin_Export(t *testing.T) {
 	tests := []args{
 		{`export-var-string`, `name="jioby";export(name);`, "jioby"},
 		{`export-var-int`, `age=18;export(age);`, float64(18)},
-		{`export-list`, `export([1,2,3]);`, spiker.ValueList{float64(1), float64(2), float64(3)}},
+		{`export-list-int`, `export([1,2,3]);`, spiker.ValueList{float64(1), float64(2), float64(3)}},
+		{`export-list-float`, `export([0.1, 2.3, 4.5]);`, spiker.ValueList{0.1, 2.3, 4.5}},
+		{`export-list-string`, `export(["a", "b", "c"]);`, spiker.ValueList{"a", "b", "c"}},
+		{`export-list-mixed`, `export([1, 0.002, "333"]);`, spiker.ValueList{float64(1), 0.002, "333"}},
+		{`export-list-index`, `list=[1, 0.002, "333"]; export(list[1]);`, 0.002},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
